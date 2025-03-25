@@ -6,6 +6,7 @@ from sample2 import Recipe
 
 load_dotenv(dotenv_path="../.env")
 
+
 def main(dish: str):
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     llm.bind(
@@ -26,7 +27,7 @@ def main(dish: str):
         format_instructions=format_instructions
     )
 
-    chain = prompt_with_format_instructions | llm | output_parser
+    chain = prompt_with_format_instructions | llm.with_structured_output(Recipe)
 
     ai_message = chain.invoke({"dish": dish})
 
@@ -34,4 +35,4 @@ def main(dish: str):
 
 
 if __name__ == "__main__":
-    main("コロッケ")
+    main("カレーうどん")
