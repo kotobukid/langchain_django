@@ -2,7 +2,9 @@ import os
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_openai import ChatOpenAI
+from sample2 import Recipe
 
 load_dotenv(dotenv_path="../.env")
 api_key = os.environ.get("OPENAI_API_KEY")
@@ -11,21 +13,27 @@ api_key = os.environ.get("OPENAI_API_KEY")
 def main():
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
+    output_parser = PydanticOutputParser(pydantic_object=Recipe)
+    format_instructions = output_parser.get_format_instructions()
+
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are a helpful assistant."),
-            MessagesPlaceholder("chat_history", optional=True),
-            ("human", "{input}")
+            ("system", "ユーザーが入力した料理のレシピを教えて下さい。\n\n" "{format_instructions}"),
+            ("human", "{dish}")
         ]
     )
 
-    prompt_value = prompt.invoke({
-        "chat_history": [
-            HumanMessage("こんにちは！私はジョンといいます！"),
-            AIMessage("こんにちは、ジョンさん！どのようにお手伝いできますか？")
-        ],
-        "input": "私の名前がわかりますか？"
-    })
+    prompt_with_format_instructions = prompt.partial(
+        format_instructions=format_instructions
+    )
+
+    prompt_value = prompt_with_format_instructions.invoke({"dish", "パンケーキ"})
+    print("=== role: system ===")
+    print(prompt_value.messages[0].content)
+    print("=== role: user ===")
+    print(prompt_value.messages[1].content)
+    print("=== role: assistant ===")
+
 
     # print(prompt_value)
 
@@ -34,9 +42,9 @@ def main():
     #     HumanMessage("こんにちは")
     # ]
     #
+
     for chunk in model.stream(prompt_value):
         print(chunk.content, end="", flush=True)
-    # > はい、あなたの名前はジョンさんですね！他にお話したいことがありますか？
 
 
 if __name__ == "__main__":
