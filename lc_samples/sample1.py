@@ -9,7 +9,7 @@ api_key = os.environ.get("OPENAI_API_KEY")
 
 
 def main():
-    # model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -27,15 +27,16 @@ def main():
         "input": "私の名前がわかりますか？"
     })
 
-    print(prompt_value)
+    # print(prompt_value)
 
     # messages = [
     #     SystemMessage("You are a helpful assistant."),
     #     HumanMessage("こんにちは")
     # ]
     #
-    # for chunk in model.stream(messages):
-    #     print(chunk.content, end="", flush=True)
+    for chunk in model.stream(prompt_value):
+        print(chunk.content, end="", flush=True)
+    # > はい、あなたの名前はジョンさんですね！他にお話したいことがありますか？
 
 
 if __name__ == "__main__":
