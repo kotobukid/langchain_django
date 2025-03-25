@@ -10,7 +10,7 @@ load_dotenv(dotenv_path="../.env")
 api_key = os.environ.get("OPENAI_API_KEY")
 
 
-def main():
+def main(dish: str):
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
     output_parser = PydanticOutputParser(pydantic_object=Recipe)
@@ -27,7 +27,7 @@ def main():
         format_instructions=format_instructions
     )
 
-    prompt_value = prompt_with_format_instructions.invoke({"dish", "パンケーキ"})
+    prompt_value = prompt_with_format_instructions.invoke({"dish", dish})
     print("=== role: system ===")
     print(prompt_value.messages[0].content)
     print("=== role: user ===")
@@ -43,9 +43,14 @@ def main():
     # ]
     #
 
+    result = ""
     for chunk in model.stream(prompt_value):
         print(chunk.content, end="", flush=True)
+        result += chunk.content
+
+    recipe = output_parser.parse(result)
+    print(recipe)
 
 
 if __name__ == "__main__":
-    main()
+    main("オムライス")
