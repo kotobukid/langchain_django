@@ -13,3 +13,4 @@ urllib3==2.3.0
 langchain-core~=0.3.48
 python-dotenv~=1.0.1
 langchain-openai~=0.3.10
+pydantic~=2.10.6
