@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
 load_dotenv(dotenv_path="../.env")
@@ -13,12 +13,19 @@ def main():
 
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "ユーザーが入力した料理のレシピを考えてください。"),
-            ("human", "{dish}")
+            ("system", "You are a helpful assistant."),
+            MessagesPlaceholder("chat_history", optional=True),
+            ("human", "{input}")
         ]
     )
 
-    prompt_value = prompt.invoke({"dish": "カレー"})
+    prompt_value = prompt.invoke({
+        "chat_history": [
+            HumanMessage("こんにちは！私はジョンといいます！"),
+            AIMessage("こんにちは、ジョンさん！どのようにお手伝いできますか？")
+        ],
+        "input": "私の名前がわかりますか？"
+    })
 
     print(prompt_value)
 
