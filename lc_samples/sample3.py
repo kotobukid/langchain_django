@@ -19,26 +19,31 @@ def main():
     )
 
     raw_docs = loader.load()
-    print(len(raw_docs))
+    # print(len(raw_docs))
 
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    for doc in raw_docs:
+        print(doc.metadata)
+        print(doc.page_content)
+        print("=" * 100)
 
-    query = "crates.ioからデータを読み込むためのDocumentLoaderはありますか？"
-
-    vector = embeddings.embed_query(query)
-    print(len(vector))
-    print(vector)
-
-    db = Chroma.from_documents(raw_docs, embeddings)
-
-    retriever = db.as_retriever()
-    context_docs = retriever.invoke(query)
-
-    print(f"len = {len(context_docs)}")
-
-    first_doc = context_docs[0]
-    print(f"metadata = {first_doc.metadata}")
-    print(first_doc.page_content)
+    # embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    #
+    # query = "crates.ioからデータを読み込むためのDocumentLoaderはありますか？"
+    #
+    # vector = embeddings.embed_query(query)
+    # print(len(vector))
+    # print(vector)
+    #
+    # db = Chroma.from_documents(raw_docs, embeddings)
+    #
+    # retriever = db.as_retriever()
+    # context_docs = retriever.invoke(query)
+    #
+    # print(f"len = {len(context_docs)}")
+    #
+    # first_doc = context_docs[0]
+    # print(f"metadata = {first_doc.metadata}")
+    # print(first_doc.page_content)
 
 
 if __name__ == "__main__":
