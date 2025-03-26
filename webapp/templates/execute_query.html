@@ -4,15 +4,25 @@
     <meta charset="utf-8"/>
     <title>テンプレート {{ template.name }}</title>
     <style>
-        pre {
+        .wrap {
             border: 1px solid black;
             padding: 5px;
             min-height: 100px;
         }
 
-        pre.answer {
+        .answer {
             border-color: green;
             background-color: lightgreen;
+        }
+
+        .float_left {
+            float: left;
+        }
+
+        .pre-like {
+            white-space: pre-wrap; /* 改行文字を維持しつつラップ */
+            word-wrap: break-word; /* 長い単語を折り返す */
+            word-break: break-word; /* 古いブラウザ向け */
         }
 
     </style>
@@ -24,18 +34,23 @@
 <h1>{{ template.name }}</h1>
 <form action="" method="POST">
     {% csrf_token %}
-    <pre>{{ template.template }}</pre>
+    <div class="wrap">{{ template.template }}</div>
     <input type="hidden" name="template_id" value="{{ template.id }}"/>
     <br/>
     {% for key in input_keys.items %}
-        <label>{{ key }}: <input type="text" name="{{ key }}" value=""/></label>
+        <label>{{ key }}: <input type="text" name="{{ key }}" value="{{ dish }}"/></label>
     {% endfor %}
     <br/>
     <button type="submit">Submit</button>
 </form>
 <hr>
-{% if answer %}
-    <pre class="answer">{{ answer }}</pre>
-{% endif %}
+<div class="float_left" style=" width: 840px;">
+    {% if answer0 %}
+        <div class="pre_like wrap answer float_left" style="width: 400px; margin-right: 10px;">{{ answer0 }}</div>
+    {% endif %}
+    {% if answer1 %}
+        <div class="pre_like wrap answer float_left" style="width: 400px; float: left;">{{ answer1 }}</div>
+    {% endif %}
+</div>
 </body>
 </html>

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .models import DesignedPrompt
 import tiktoken
-import json
+from .query_chain import query_pattern1
 
 
 def index(request):
@@ -28,18 +28,31 @@ def execute_query(request, slug: str = None, ):
 
     if request.method == "POST":
         t = template[0]
-        print(t)
-        request.session['answer'] = "hello"
+        d = {}
+
+        for key in t.input_keys:
+            d[key] = request.POST.get(key)
+
+        results: [str, str] = query_pattern1(t, d)
+        request.session['answer0'] = results[0]
+        request.session['answer1'] = results[1]
+        request.session['dish'] = request.POST.get('dish')
 
         return HttpResponseRedirect(reverse("execute_query", args=[slug]))
     else:
-        answer = request.session.get('answer') or ''
+        answer0 = request.session.get('answer0') or ''
+        answer1 = request.session.get('answer1') or ''
+        dish = request.session.get('dish') or ''
+
+        request.session.flush()
 
         return render(
             request,
             "execute_query.html",
             {
-                "answer": answer,
+                "dish": dish,
+                "answer0": answer0,
+                "answer1": answer1,
                 "template": template[0],
                 "input_keys": {"items": template[0].input_keys}
             }
