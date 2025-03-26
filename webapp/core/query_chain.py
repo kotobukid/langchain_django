@@ -4,13 +4,24 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnableParallel
 from .models import DesignedPrompt
 from langchain_openai import ChatOpenAI
+import re
 
 load_dotenv(dotenv_path="../.env")
 
 
+def trim_template_string(template_string: str) -> str:
+    """
+    テンプレート文字列の {key} 内に存在する不必要なスペースを削除する。
+    例: { item1 } → {item1}
+    """
+    # 正規表現で { } 内のスペースを削除
+    template_string = re.sub(r"{\s*(\w+)\s*}", r"{\1}", template_string)
+    return template_string
+
+
 def query_pattern1(dp: DesignedPrompt, input_data: dict) -> [str, str]:
     # DesignedPromptからテンプレート取得
-    template_string = dp.template
+    template_string = trim_template_string(dp.template)
 
     # HumanMessagePromptTemplateに基づきメッセージテンプレートを生成
     human_message_template = HumanMessagePromptTemplate.from_template(template_string)

@@ -26,8 +26,8 @@ def execute_query(request, slug: str = None, ):
     if not template.exists():
         raise Http404("prompt template not found.")
 
+    t = template[0]
     if request.method == "POST":
-        t = template[0]
         d = {}
 
         for key in t.input_keys:
@@ -36,26 +36,33 @@ def execute_query(request, slug: str = None, ):
         results: [str, str] = query_pattern1(t, d)
         request.session['answer0'] = results[0]
         request.session['answer1'] = results[1]
-        request.session['dish'] = request.POST.get('dish')
+        request.session['_post'] = d
 
         return HttpResponseRedirect(reverse("execute_query", args=[slug]))
     else:
         answer0 = request.session.get('answer0') or ''
         answer1 = request.session.get('answer1') or ''
-        dish = request.session.get('dish') or ''
+        _post = request.session.get('_post') or {}
+        input_keys = zip(template[0].input_keys, [
+            (_post.get(key) or '') for key in template[0].input_keys
+        ])
+
+        print(input_keys)
 
         request.session.flush()
+
+        context = {
+            "answer0": answer0,
+            "answer1": answer1,
+            "template": template[0],
+            "input_keys": {"items": input_keys},
+            "_post": _post,
+        }
 
         return render(
             request,
             "execute_query.html",
-            {
-                "dish": dish,
-                "answer0": answer0,
-                "answer1": answer1,
-                "template": template[0],
-                "input_keys": {"items": template[0].input_keys}
-            }
+            context
         )
 
 

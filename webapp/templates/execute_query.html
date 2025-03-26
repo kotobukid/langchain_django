@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8"/>
-    <title>テンプレート {{ template.name }}</title>
+    <title>[{{ template.name }}] テンプレート</title>
     <style>
         .wrap {
             border: 1px solid black;
@@ -25,6 +25,10 @@
             word-break: break-word; /* 古いブラウザ向け */
         }
 
+        label.variable {
+            margin-right: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -38,7 +42,7 @@
     <input type="hidden" name="template_id" value="{{ template.id }}"/>
     <br/>
     {% for key in input_keys.items %}
-        <label>{{ key }}: <input type="text" name="{{ key }}" value="{{ dish }}"/></label>
+        <label class="variable">{{ key.0 }}: <input type="text" name="{{ key.0 }}" value="{{ key.1 }}" autocomplete="off"/></label>
     {% endfor %}
     <br/>
     <button type="submit">Submit</button>
@@ -46,10 +50,10 @@
 <hr>
 <div class="float_left" style=" width: 840px;">
     {% if answer0 %}
-        <div class="pre_like wrap answer float_left" style="width: 400px; margin-right: 10px;">{{ answer0 }}</div>
+        <div class="pre-like wrap answer float_left" style="width: 400px; margin-right: 10px;">{{ answer0 }}</div>
     {% endif %}
     {% if answer1 %}
-        <div class="pre_like wrap answer float_left" style="width: 400px; float: left;">{{ answer1 }}</div>
+        <div class="pre-like wrap answer float_left" style="width: 400px; float: left;">{{ answer1 }}</div>
     {% endif %}
 </div>
 </body>
