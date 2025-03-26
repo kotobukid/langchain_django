@@ -42,7 +42,10 @@ class GenerationHistory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"[{self.pk}] {self.prompt.name}"
+        return f"[{self.pk}] {self.prompt.name} ({self.context_summary()})"
+
+    def context_summary(self):
+        return ", ".join(self.context_object.values())
 
     class Meta:
         verbose_name = "生成履歴"
