@@ -1,6 +1,49 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
+from django.urls import reverse
+from .models import DesignedPrompt
 import tiktoken
+import json
+
+
+def index(request):
+    return render(request, "index.html")
+
+
+def templates(request):
+    _templates = DesignedPrompt.objects.all()
+
+    return render(request, "templates.html", {
+        "templates": _templates,
+    })
+
+
+def execute_query(request, slug: str = None, ):
+    template = DesignedPrompt.objects.filter(slug=slug)
+    if not slug:
+        raise Http404("slug is missing.")
+
+    if not template.exists():
+        raise Http404("prompt template not found.")
+
+    if request.method == "POST":
+        t = template[0]
+        print(t)
+        request.session['answer'] = "hello"
+
+        return HttpResponseRedirect(reverse("execute_query", args=[slug]))
+    else:
+        answer = request.session.get('answer') or ''
+
+        return render(
+            request,
+            "execute_query.html",
+            {
+                "answer": answer,
+                "template": template[0],
+                "input_keys": {"items": template[0].input_keys}
+            }
+        )
 
 
 def tiktoken_form(request):
@@ -29,4 +72,4 @@ def process_tiktoken(request):
     request.session['body'] = body
     request.session['tokens'] = len(tokens)
 
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(reverse("tiktoken_form"))

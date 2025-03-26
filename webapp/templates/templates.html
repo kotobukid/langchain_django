@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8"/>
+    <title>テンプレート一覧</title>
+</head>
+<body>
+<a href="/">Home</a>
+<hr/>
+<ul>
+    {% for template in templates %}
+        <li>
+            <a href="/templates/{{ template.slug }}/">{{ template.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+</body>
+</html>

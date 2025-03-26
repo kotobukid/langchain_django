@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8"/>
+    <title>テンプレート {{ template.name }}</title>
+    <style>
+        pre {
+            border: 1px solid black;
+            padding: 5px;
+            min-height: 100px;
+        }
+
+        pre.answer {
+            border-color: green;
+            background-color: lightgreen;
+        }
+
+    </style>
+</head>
+<body>
+<a href="/">Home</a>
+&nbsp;<a href="/admin">Admin</a>
+<hr/>
+<h1>{{ template.name }}</h1>
+<form action="" method="POST">
+    {% csrf_token %}
+    <pre>{{ template.template }}</pre>
+    <input type="hidden" name="template_id" value="{{ template.id }}"/>
+    <br/>
+    {% for key in input_keys.items %}
+        <label>{{ key }}: <input type="text" name="{{ key }}" value=""/></label>
+    {% endfor %}
+    <br/>
+    <button type="submit">Submit</button>
+</form>
+<hr>
+{% if answer %}
+    <pre class="answer">{{ answer }}</pre>
+{% endif %}
+</body>
+</html>

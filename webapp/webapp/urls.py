@@ -19,7 +19,10 @@ from django.urls import path
 from core import views
 
 urlpatterns = [
-    path('', views.tiktoken_form),
-    path('tiktoken', views.process_tiktoken),
+    path('', views.index),
+    path('templates', views.templates),
+    path('templates/<slug>/', views.execute_query, name='execute_query'),
+    path('tiktoken', views.tiktoken_form, name='tiktoken_form'),
+    path('process_tiktoken', views.process_tiktoken),
     path('admin/', admin.site.urls),
 ]

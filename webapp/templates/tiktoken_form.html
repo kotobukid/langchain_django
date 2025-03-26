@@ -11,8 +11,10 @@
     </style>
 </head>
 <body>
+<a href="/">Home</a>
+<hr />
 <span>{{ tokens }} tokens</span>
-<form action="/tiktoken" method="post">
+<form action="/process_tiktoken" method="post">
     <textarea name="body">{{ body }}</textarea>
     {% csrf_token %}
     <br>
