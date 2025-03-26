@@ -40,16 +40,13 @@ def execute_query(request, slug: str = None, ):
 
         return HttpResponseRedirect(reverse("execute_query", args=[slug]))
     else:
-        answer0 = request.session.get('answer0') or ''
-        answer1 = request.session.get('answer1') or ''
-        _post = request.session.get('_post') or {}
+        answer0 = request.session.pop('answer0') or ''
+        answer1 = request.session.pop('answer1') or ''
+        _post = request.session.pop('_post') or {}
+
         input_keys = zip(template[0].input_keys, [
             (_post.get(key) or '') for key in template[0].input_keys
         ])
-
-        print(input_keys)
-
-        request.session.flush()
 
         context = {
             "answer0": answer0,
