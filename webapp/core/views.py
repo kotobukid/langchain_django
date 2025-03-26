@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
 from django.urls import reverse
-from .models import DesignedPrompt
+from .models import DesignedPrompt, GenerationHistory
 import tiktoken
 from .query_chain import query_pattern1
 
@@ -37,6 +37,13 @@ def execute_query(request, slug: str = None, ):
         request.session['answer0'] = results[0]
         request.session['answer1'] = results[1]
         request.session['_post'] = d
+
+        for gen in results:
+            his1 = GenerationHistory()
+            his1.prompt = t
+            his1.context_object = d
+            his1.generated_text = gen
+            his1.save()
 
         return HttpResponseRedirect(reverse("execute_query", args=[slug]))
     else:

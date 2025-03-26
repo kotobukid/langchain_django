@@ -33,3 +33,17 @@ class DesignedPrompt(models.Model):
         except ValidationError as e:
             # バリデーションエラーの場合、例外を投げる
             raise models.ValidationError(f"Invalid input keys: {e}")
+
+
+class GenerationHistory(models.Model):
+    prompt = models.ForeignKey(DesignedPrompt, on_delete=models.CASCADE)
+    context_object = models.JSONField()
+    generated_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"[{self.pk}] {self.prompt.name}"
+
+    class Meta:
+        verbose_name = "生成履歴"
+        verbose_name_plural = "生成履歴"
