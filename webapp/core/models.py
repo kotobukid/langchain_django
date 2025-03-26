@@ -38,11 +38,12 @@ class DesignedPrompt(models.Model):
 class GenerationHistory(models.Model):
     prompt = models.ForeignKey(DesignedPrompt, on_delete=models.CASCADE)
     context_object = models.JSONField()
+    style = models.CharField(max_length=16, default="default")
     generated_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"[{self.pk}] {self.prompt.name} ({self.context_summary()})"
+        return f"[{self.pk}] {self.prompt.name} / {self.style} ({self.context_summary()})"
 
     def context_summary(self):
         return ", ".join(self.context_object.values())

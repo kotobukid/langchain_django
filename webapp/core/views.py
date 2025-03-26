@@ -2,8 +2,9 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from .models import DesignedPrompt, GenerationHistory
-import tiktoken
 from .query_chain import query_pattern1
+from typing import List, Dict
+import tiktoken
 
 
 def index(request):
@@ -33,9 +34,9 @@ def execute_query(request, slug: str = None, ):
         for key in t.input_keys:
             d[key] = request.POST.get(key)
 
-        results: [str, str] = query_pattern1(t, d)
-        request.session['answer0'] = results[0]
-        request.session['answer1'] = results[1]
+        results: List[Dict[str, str]] = query_pattern1(t, d)
+        request.session['answer0'] = results[0]["text"]
+        request.session['answer1'] = results[1]["text"]
         request.session['_post'] = d
 
         for gen in results:
@@ -43,6 +44,7 @@ def execute_query(request, slug: str = None, ):
             his1.prompt = t
             his1.context_object = d
             his1.generated_text = gen
+            his1.style = gen.get('style') or 'normal'
             his1.save()
 
         return HttpResponseRedirect(reverse("execute_query", args=[slug]))

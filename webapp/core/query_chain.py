@@ -4,6 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnableParallel
 from .models import DesignedPrompt
 from langchain_openai import ChatOpenAI
+from typing import List, Dict
 import re
 
 load_dotenv(dotenv_path="../.env")
@@ -19,7 +20,7 @@ def trim_template_string(template_string: str) -> str:
     return template_string
 
 
-def query_pattern1(dp: DesignedPrompt, input_data: dict) -> [str, str]:
+def query_pattern1(dp: DesignedPrompt, input_data: dict) -> List[Dict[str, str]]:
     # DesignedPromptからテンプレート取得
     template_string = trim_template_string(dp.template)
 
@@ -60,17 +61,22 @@ def query_pattern1(dp: DesignedPrompt, input_data: dict) -> [str, str]:
         """そのままのプロンプトで処理"""
         return {"query": prompt}
 
-    def like_girl(prompt: str) -> dict:
+    def like_gal(prompt: str) -> dict:
         """ギャルっぽい口調を生成"""
+        return {"query": f"ノリノリなギャル語でよろ～☆ 質問文: {prompt}"}
+
+    def like_kitten(prompt: str) -> dict:
+        """猫語っぽい口調を生成"""
         return {"query": f"超カワな猫ちゃん語でさ、めっちゃフレンドリーに答えてほしいの♡ 質問文: {prompt}"}
 
     # Runnable定義
     gal_runnable = (
             pass_through  # 入力をそのまま渡す
-            | RunnableLambda(like_girl)  # ギャルメッセージ生成
+            | RunnableLambda(like_gal)  # ギャルメッセージ生成
             | chat_prompt_gal  # ギャルメッセージをプロンプト内に挿入
             | llm2  # プロンプトからLLMで処理
             | output_parser  # LLMの出力を解析
+            | RunnableLambda(lambda result: {"style": "gal", "text": result})
     )
 
     pass_through_runnable = (
@@ -78,6 +84,7 @@ def query_pattern1(dp: DesignedPrompt, input_data: dict) -> [str, str]:
             | chat_prompt  # 標準メッセージ（人間のメッセージ）をプロンプト内に挿入
             | llm2  # プロンプトからLLMで処理
             | output_parser  # LLMの出力を解析
+            | RunnableLambda(lambda result: {"style": "normal", "text": result})
     )
 
     # 並列処理Runnable作成
@@ -92,7 +99,4 @@ def query_pattern1(dp: DesignedPrompt, input_data: dict) -> [str, str]:
     results = parallel_runnable.invoke(runnable_input.content)
 
     # 処理結果を返す
-    return [
-        results["gal"],
-        results["normal"]
-    ]
+    return list(results.values())
